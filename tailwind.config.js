@@ -2,7 +2,11 @@
 module.exports = {
     content: ['./src/pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
     theme: {
-        extend: {},
+        extend: {
+            borderColor: ({ theme }) => ({
+                basic: theme('colors.gray.400'),
+            }),
+        },
     },
     plugins: [],
 }

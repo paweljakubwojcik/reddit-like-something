@@ -9,6 +9,11 @@ export const posts = createRouter()
                 select: {
                     id: true,
                     title: true,
+                    _count: {
+                        select: {
+                            comments: true,
+                        },
+                    },
                 },
             }),
     })
@@ -23,6 +28,9 @@ export const posts = createRouter()
                     comments: {
                         orderBy: {
                             createdAt: 'desc',
+                        },
+                        where: {
+                            parentCommentId: null,
                         },
                         include: {
                             user: {
