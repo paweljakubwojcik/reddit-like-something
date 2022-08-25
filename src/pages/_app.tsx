@@ -3,10 +3,12 @@ import { AppType } from 'next/dist/shared/lib/utils'
 import { AppRouter } from './api/trpc/[trpc]'
 import 'styles/globals.css'
 import { Layout } from 'components/layout'
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
     return (
         <Layout>
+            <ReactQueryDevtools  />
             <Component {...pageProps} />
         </Layout>
     )

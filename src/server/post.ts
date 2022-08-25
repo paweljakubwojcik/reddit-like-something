@@ -19,37 +19,24 @@ export const posts = createRouter()
     })
     .query('postById', {
         input: z.object({ id: z.string() }),
-        resolve: async ({ input: { id } }) =>
-            await prisma.post.findUnique({
+        resolve: ({ input: { id } }) =>
+            prisma.post.findUnique({
                 where: {
                     id,
-                },
-                include: {
-                    comments: {
-                        orderBy: {
-                            createdAt: 'desc',
-                        },
-                        where: {
-                            parentCommentId: null,
-                        },
-                        include: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                },
-                            },
-                        },
-                    },
                 },
             }),
     })
     .query('comments', {
-        input: z.object({ parentCommentId: z.string(), after: z.string().optional(), limit: z.number() }),
-        resolve: async ({ input: { parentCommentId, after, limit } }) =>
-            await prisma.comment.findMany({
+        input: z.object({
+            parentCommentId: z.string().optional().nullable(),
+            postId: z.string().optional(),
+            after: z.string().optional(),
+            limit: z.number(),
+        }),
+        resolve: async ({ input: { limit, after, ...rest } }) => {
+            return await prisma.comment.findMany({
                 where: {
-                    parentCommentId,
+                    ...rest,
                 },
                 orderBy: {
                     createdAt: 'desc',
@@ -68,5 +55,24 @@ export const posts = createRouter()
                       }
                     : undefined,
                 take: limit,
-            }),
+            })
+        },
+    })
+    .mutation('addComment', {
+        input: z.object({
+            message: z.string(),
+            postId: z.string(),
+            userId: z.string(),
+            parentCommentId: z.string().optional(),
+        }),
+        resolve: async ({ input: { message, postId, userId, parentCommentId } }) => {
+            return await prisma.comment.create({
+                data: {
+                    message,
+                    userId,
+                    postId,
+                    parentCommentId,
+                },
+            })
+        },
     })
